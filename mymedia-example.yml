@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  mymedia:
+    image: bizmodeller/mymediaforalexa
+    mac_address: 02:42:39:6e:fd:3b
+    hostname: mymedia
+    domainname: mymedia.home.local
+    command: ifconfig eth0
+    networks:
+      - qnet-dhcp
+    ports:
+      - "52050:52050"
+      - "52051:52051"
+    user: root:root
+    volumes:
+      - /share/Container/mymedia:/datadir
+      - /share/Multimedia/Audio/Sluchowiska:/medialibrary:ro
+
+networks:
+  qnet-dhcp:
+    driver: qnet
+    ipam:
+      driver: qnet
+      options:
+        iface: "eth0"
