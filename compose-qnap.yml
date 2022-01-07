@@ -1,0 +1,55 @@
+version: '2.2'
+services:
+  elasticsearch:
+    image: elasticsearch:7.7.0
+    mac_address: 02:42:C1:FB:A9:23
+    container_name: elasticsearch
+    hostname: elasticsearch
+    environment:
+      - "discovery.type=single-node"
+    ports:
+        - 9200:9200
+        - 9300:9300
+    volumes:
+      - /share/Container/elk/elasticsearch:/usr/share/elasticsearch/data
+    networks:
+      - qnet-dhcp
+
+  kibana:
+      image: kibana:7.7.0
+      mac_address: 02:42:21:ca:16:a6
+      container_name: kibana
+      hostname: kibana
+      ports:
+          - 5601:5601
+      links:
+          - elasticsearch:elasticsearch
+      depends_on:
+        - elasticsearch
+      networks:
+        - qnet-dhcp
+
+  logstash:
+    image: logstash:7.7.0
+    mac_address: 02:42:3f:91:67:43
+    container_name: logstash
+    hostname: logstash
+    ports:
+        - 9600:9600
+        - 8089:8089
+    volumes:
+      - /share/Container/elk/logstash:/usr/share/logstash/pipeline/
+    links:
+        - elasticsearch:elasticsearch
+    depends_on:
+      - elasticsearch
+    networks:
+      - qnet-dhcp
+
+networks:
+  qnet-dhcp:
+    driver: qnet
+    ipam:
+      driver: qnet
+      options:
+        iface: "eth0"
